@@ -78,6 +78,21 @@ def add_product():
     
     return redirect(url_for('index'))
 
+@app.route('/checkout')
+def checkout():
+    all_products = supermarket.list_products()
+    products = [p for p in all_products if p[3] == 1]  # Kun produkter i kurven
+    total_price = sum(p[1] * p[2] for p in products)
+
+    return render_template('checkout.html', products=products, total_price=total_price)
+
+@app.route('/confirm-payment', methods=['POST'])
+def confirm_payment():
+    # Tøm kurven ved at sætte in_cart = 0
+    supermarket.cursor.execute("UPDATE supermarket SET in_cart = 0 WHERE in_cart = 1")
+    supermarket.conn.commit()
+
+    return "<h1>Tak for din betaling! ✅</h1><p><a href='/'>Tilbage til forsiden</a></p>"
 
 if __name__ == '__main__':
     app.run(debug=True)

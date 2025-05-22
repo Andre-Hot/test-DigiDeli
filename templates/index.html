@@ -24,6 +24,9 @@
     <!-- Lagerantal -->
     <p class="text-muted"><strong>Samlet antal vare i kurven:</strong> {{ total_stock }}</p>
     <p class="text-muted"><strong>Samlet pris for alle varer i kurven:</strong> {{ total_price }} kr</p>
+    <a href="{{ url_for('checkout') }}" class="btn btn-primary mb-4">💳 Betal nu</a>
+
+
 
 
     <!-- Produktliste -->
