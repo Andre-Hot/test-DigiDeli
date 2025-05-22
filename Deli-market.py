@@ -6,9 +6,20 @@ supermarket = SuperMarket()
 
 @app.route('/')
 def index():
-    products = supermarket.list_products()
-    total_stock = sum(product[2] for product in products)
-    return render_template('index.html', products=products, total_stock=total_stock)
+    all_products = supermarket.list_products()
+    products = [p for p in all_products if p[3] == 1]  # Kun varer i kurv
+    total_stock = sum(p[2] for p in products)
+
+    # Hent alle produktnavne til dropdown
+    dropdown_options = supermarket.list_all_available_products()
+
+    return render_template(
+        'index.html',
+        products=products,
+        total_stock=total_stock,
+        dropdown_options=dropdown_options
+    )
+
 
 @app.route('/search')
 def search():
@@ -25,8 +36,16 @@ def reduce():
 
 @app.route('/delete/<name>', methods=['POST'])
 def delete_product(name):
-    supermarket.remove_product(name)
+    product_data = supermarket.search_product(name)
+    if product_data:
+        current = product_data[0]
+        # Sæt quantity til 0 og in_cart til 0
+        supermarket.cursor.execute(
+            "UPDATE supermarket SET quantity = 0, in_cart = 0 WHERE name = ?", (name,)
+        )
+        supermarket.conn.commit()
     return redirect(url_for('index'))
+
 
 @app.route('/edit/<name>', methods=['GET', 'POST'])
 def edit_product(name):
@@ -47,11 +66,15 @@ def edit_product(name):
 @app.route('/add', methods=['POST'])
 def add_product():
     name = request.form['name']
-    price = float(request.form['price'])
     quantity = int(request.form['quantity'])
-    new_product = Product(name, price, quantity)
-    supermarket.add_product(new_product)
+
+    # Find produkt og markér som "i kurven"
+    product_data = supermarket.search_product(name)
+    if product_data:
+        supermarket.add_to_cart(name, quantity)
+    
     return redirect(url_for('index'))
+
 
 if __name__ == '__main__':
     app.run(debug=True)

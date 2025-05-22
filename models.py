@@ -16,9 +16,17 @@ class SuperMarket:
         self._create_table()
 
     def _create_table(self):
-        query = "CREATE TABLE IF NOT EXISTS supermarket (name TEXT PRIMARY KEY, price FLOAT, quantity INT)"
+        query = """
+        CREATE TABLE IF NOT EXISTS supermarket (
+            name TEXT PRIMARY KEY,
+            price FLOAT,
+            quantity INT,
+            in_cart BOOLEAN DEFAULT 0
+        )
+        """
         self.cursor.execute(query)
         self.conn.commit()
+
 
     def add_product(self, product):
         query = "INSERT OR REPLACE INTO supermarket (name, price, quantity) VALUES (?, ?, ?)"
@@ -49,3 +57,14 @@ class SuperMarket:
         query = "SELECT * FROM supermarket WHERE price BETWEEN ? AND ?"
         self.cursor.execute(query, (min_price, max_price))
         return self.cursor.fetchall()
+    
+    def add_to_cart(self, name, quantity):
+        self.cursor.execute("UPDATE supermarket SET quantity = ?, in_cart = 1 WHERE name = ?", (quantity, name))
+        self.conn.commit()
+
+    def list_all_available_products(self):
+        query = "SELECT name FROM supermarket"
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+
+

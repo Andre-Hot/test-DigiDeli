@@ -9,7 +9,7 @@
 
 <div class="container py-5">
 
-    <h1 class="mb-4 text-primary">🛒 Deigi Deli Produkt Liste</h1>
+    <h1 class="mb-4 text-primary">🛒 Deigi Deli take-away liste</h1>
 
     <!-- Søgefelt -->
     <form action="{{ url_for('search') }}" method="GET" class="row g-3 mb-4">
@@ -22,7 +22,7 @@
     </form>
 
     <!-- Lagerantal -->
-    <p class="text-muted"><strong>Samlet lagerbeholdning:</strong> {{ total_stock }}</p>
+    <p class="text-muted"><strong>Samlet antal vare i kurven:</strong> {{ total_stock }}</p>
 
     <!-- Produktliste -->
     <div class="list-group mb-5">
@@ -30,8 +30,7 @@
         <div class="list-group-item d-flex justify-content-between align-items-center">
             <div>
                 <h5 class="mb-1">{{ product[0] }}</h5>
-                <small class="text-muted">Pris: {{ product[1] }} kr</small><br>
-                <small class="text-success">Lager: {{ product[2] }}</small>
+                <small class="text-success">antal: {{ product[2] }} | pris: {{ product[1] }} kr</small>
             </div>
             <div class="d-flex align-items-center">
                 <a href="{{ url_for('edit_product', name=product[0]) }}" class="btn btn-warning btn-sm me-2">✏️ Rediger</a>
@@ -44,21 +43,24 @@
     </div>
 
     <!-- Tilføj produkt formular -->
-    <h2 class="text-secondary mb-3">➕ Tilføj nyt produkt</h2>
-    <form action="/add" method="POST" class="row g-3">
-        <div class="col-md-4">
-            <input type="text" name="name" placeholder="Navn" class="form-control" required>
-        </div>
-        <div class="col-md-3">
-            <input type="number" name="price" placeholder="Pris" step="0.01" class="form-control" required>
-        </div>
-        <div class="col-md-3">
-            <input type="number" name="quantity" placeholder="Antal på lager" class="form-control" required>
-        </div>
-        <div class="col-md-2">
-            <button type="submit" class="btn btn-success w-100">➕ Tilføj</button>
-        </div>
-    </form>
+<h2 class="text-secondary mb-3">➕ Tilføj nyt produkt til kurven</h2>
+<form action="/add" method="POST" class="row g-3">
+    <div class="col-md-4">
+        <select name="name" class="form-select" required>
+            <option value="" disabled selected>Vælg et produkt...</option>
+            {% for option in dropdown_options %}
+                <option value="{{ option[0] }}">{{ option[0] }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-3">
+        <input type="number" name="quantity" placeholder="Antal på lager" class="form-control" required>
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-success w-100">➕ Tilføj</button>
+    </div>
+</form>
+
 
 </div>
 
