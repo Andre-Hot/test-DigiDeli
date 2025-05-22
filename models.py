@@ -41,8 +41,8 @@ class SuperMarket:
         self.conn.commit()
 
     def search_product(self, name):
-        query = "SELECT * FROM supermarket WHERE name = ?"
-        self.cursor.execute(query, (name,))
+        query = "SELECT * FROM supermarket WHERE LOWER(name) LIKE ?"
+        self.cursor.execute(query, (f"%{name.lower()}%",))
         return self.cursor.fetchall()
 
     def filter_products(self, min_price, max_price):
