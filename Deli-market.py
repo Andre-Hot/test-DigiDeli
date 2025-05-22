@@ -8,7 +8,9 @@ supermarket = SuperMarket()
 def index():
     all_products = supermarket.list_products()
     products = [p for p in all_products if p[3] == 1]  # Kun varer i kurv
+
     total_stock = sum(p[2] for p in products)
+    total_price = sum(p[1] * p[2] for p in products)  # Pris * antal for hvert produkt
 
     # Hent alle produktnavne til dropdown
     dropdown_options = supermarket.list_all_available_products()
@@ -17,6 +19,7 @@ def index():
         'index.html',
         products=products,
         total_stock=total_stock,
+        total_price=total_price,
         dropdown_options=dropdown_options
     )
 
