@@ -21,15 +21,18 @@ class SuperMarket:
             name TEXT PRIMARY KEY,
             price FLOAT,
             quantity INT,
-            in_cart BOOLEAN DEFAULT 0
+            in_cart BOOLEAN DEFAULT 0,
+            cart_quantity INT DEFAULT 0
         )
         """
         self.cursor.execute(query)
         self.conn.commit()
 
-
     def add_product(self, product):
-        query = "INSERT OR REPLACE INTO supermarket (name, price, quantity) VALUES (?, ?, ?)"
+        query = """
+        INSERT OR REPLACE INTO supermarket (name, price, quantity, in_cart, cart_quantity) 
+        VALUES (?, ?, ?, 0, 0)
+        """
         self.cursor.execute(query, (product.name, product.price, product.quantity))
         self.conn.commit()
 
@@ -39,8 +42,7 @@ class SuperMarket:
         self.conn.commit()
 
     def list_products(self):
-        query = "SELECT * FROM supermarket"
-        self.cursor.execute(query)
+        self.cursor.execute("SELECT name, price, quantity, in_cart, cart_quantity FROM supermarket")
         return self.cursor.fetchall()
 
     def update_product(self, product):
@@ -49,22 +51,36 @@ class SuperMarket:
         self.conn.commit()
 
     def search_product(self, name):
-        query = "SELECT * FROM supermarket WHERE LOWER(name) LIKE ?"
+        query = "SELECT name, price, quantity, in_cart, cart_quantity FROM supermarket WHERE LOWER(name) LIKE ?"
         self.cursor.execute(query, (f"%{name.lower()}%",))
         return self.cursor.fetchall()
 
     def filter_products(self, min_price, max_price):
-        query = "SELECT * FROM supermarket WHERE price BETWEEN ? AND ?"
+        query = "SELECT name, price, quantity, in_cart, cart_quantity FROM supermarket WHERE price BETWEEN ? AND ?"
         self.cursor.execute(query, (min_price, max_price))
         return self.cursor.fetchall()
     
     def add_to_cart(self, name, quantity):
-        self.cursor.execute("UPDATE supermarket SET quantity = ?, in_cart = 1 WHERE name = ?", (quantity, name))
+        self.cursor.execute("SELECT quantity, cart_quantity FROM supermarket WHERE name = ?", (name,))
+        result = self.cursor.fetchone()
+        if not result:
+            raise ValueError("Produkt ikke fundet")
+
+        current_stock, current_cart_qty = result
+
+        if quantity > current_stock:
+            raise ValueError("Ikke nok på lager")
+
+        new_stock = current_stock - quantity
+        new_cart_qty = current_cart_qty + quantity
+
+        self.cursor.execute(
+            "UPDATE supermarket SET quantity = ?, cart_quantity = ?, in_cart = 1 WHERE name = ?",
+            (new_stock, new_cart_qty, name)
+        )
         self.conn.commit()
 
     def list_all_available_products(self):
         query = "SELECT name FROM supermarket"
         self.cursor.execute(query)
         return self.cursor.fetchall()
-
-
