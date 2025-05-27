@@ -134,6 +134,10 @@ def add_to_inventory():
     supermarket.add_product(new_product)
     return redirect(url_for('lager'))
 
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
 @app.route('/checkout')
 def checkout():
     all_products = supermarket.list_products()
