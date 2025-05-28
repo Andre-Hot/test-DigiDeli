@@ -10,16 +10,16 @@
     <h1 class="text-success mb-4">💳 Betaling</h1>
 
     <h4>Oversigt over din kurv:</h4>
-    <ul class="list-group mb-4">
-        {% for product in products %}
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            {{ product[0] }} ({{ product[2] }} stk á {{ product[1] }} kr)
-            <span class="badge bg-secondary rounded-pill">{{ product[1] * product[2] }} kr</span>
-        </li>
-        {% endfor %}
-    </ul>
+<ul class="list-group mb-4">
+    {% for product in products %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+        {{ product[0] }} ({{ product[4] }} stk af {{ product[1]|int }} kr)
+    </li>
+    {% endfor %}
+</ul>
 
-    <h4 class="mb-4">Samlet pris: <strong>{{ total_price }} kr</strong></h4>
+
+    <h4 class="mb-4">Samlet pris: <strong>{{ total_price|int }} kr</strong></h4>
 
     <form action="{{ url_for('confirm_payment') }}" method="POST">
         <button type="submit" class="btn btn-success btn-lg">✅ Bekræft betaling</button>
