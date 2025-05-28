@@ -27,7 +27,7 @@
 
     <!-- Lagerantal -->
     <p class="text-muted"><strong>Samlet antal vare i kurven:</strong> {{ total_stock }}</p>
-    <p class="text-muted"><strong>Samlet pris for alle varer i kurven:</strong> {{ total_price }} kr</p>
+    <p class="text-muted"><strong>Samlet pris for alle varer i kurven:</strong> {{ total_price|int }} kr</p>
     <a href="{{ url_for('checkout') }}" class="btn btn-primary mb-4">💳 Betal nu</a>
 
     <!-- Lager-side knap -->
@@ -46,7 +46,7 @@
             <div>
                 <h5 class="mb-1">{{ product[0] }}</h5>
                 <small class="{% if product[3] < 5 %}text-danger{% else %}text-success{% endif %}">
-                    Antal i kurv: {{ product[4] }} | Pris per stk: {{ product[1] }} kr
+                    Antal i kurv: {{ product[4] }} | Pris per stk: {{ product[1]|int }} kr
                 </small>
 
 
